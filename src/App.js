@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import CardList from "./components/card-list/CardList";
+import SearchInput from "./components/search-input/SearchInput";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      cats: [],
+      searchTerm: ""
+    };
+  }
+
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then(res => res.json())
+      .then(data => this.setState({ cats: data }));
+  }
+
+  handleSearchChange = val => {
+    this.setState({ searchTerm: val });
+  };
+
+  render() {
+    const { cats, searchTerm } = this.state;
+    const filteredCats = cats.filter(cat => {
+      return cat.name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    return (
+      <div className="App">
+        <h1>CatWorld</h1>
+        <SearchInput handleSearchChange={this.handleSearchChange} placeholder={'Search Cats..'} />
+        <CardList cats={filteredCats} />
+      </div>
+    );
+  }
 }
 
 export default App;
